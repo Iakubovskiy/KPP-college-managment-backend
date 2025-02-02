@@ -89,4 +89,13 @@ class Subject
         return $this;
     }
 
+    public function mapFromOneObjectToAnother(Subject $subject): static{
+        $this->Name = $subject->getName();
+        $this->hoursPerWeek = $subject->getHoursPerWeek();
+        $this->teacher = $subject->getTeachers();
+        $this->grades = $subject->getGrades();
+        $this->schedual_days = $subject->getSchedules();
+        return $this;
+    }
+
 }

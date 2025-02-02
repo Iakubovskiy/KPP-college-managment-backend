@@ -19,6 +19,10 @@ class Student extends User
     #[ORM\OneToMany(targetEntity: Grade::class, mappedBy:'student')]
     private Collection $grades;
 
+    public function __construct(){
+        $this->roles = ["ROLE_STUDENT"];
+    }
+
     public function getId(): ?int
     {
         return $this->id;

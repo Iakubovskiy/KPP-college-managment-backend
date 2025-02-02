@@ -12,12 +12,28 @@ class Teacher extends User
     #[ORM\OneToMany(mappedBy:"teacher", targetEntity: Subject::class)]
     private Collection $subjects;
 
+    #[ORM\OneToMany(mappedBy:"teacher", targetEntity: Grade::class)]
+    private Collection $grades;
+
+    public function __construct(){
+        $this->roles = ["ROLE_TEACHER"];
+    }
+
     public function getSubjects(): Collection{
         return $this->subjects;
     }
 
     public function setSubjects(Collection $subjects): static{
         $this->subjects = $subjects;
+        return $this;
+    }
+
+    public function getGrades(): Collection{
+        return $this->grades;
+    }
+
+    public function setGrades(Collection $grades): static{
+        $this->grades = $grades;
         return $this;
     }
 }

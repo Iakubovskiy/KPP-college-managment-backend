@@ -7,51 +7,94 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[InheritanceType('SINGLE_TABLE')]
 #[DiscriminatorColumn(name: 'discriminator', type: 'string')]
 #[DiscriminatorMap([
     "student" => Student::class,
     "teacher" => Teacher::class,
+    "admin" => Admin::class,
     ])]
-class User
+abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     protected ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    protected ?string $login = null;
+    #[ORM\Column(length: 180)]
+    protected ?string $email = null;
 
-    #[ORM\Column(length: 50)]
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column]
+    protected array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
     protected ?string $password = null;
-
-    #[ORM\Column(length: 50)]
-    protected ?string $Name = null;
-
-    #[ORM\Column(length: 50)]
-    protected ?string $Surname = null;
-
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getLogin(): ?string
+    public function getEmail(): ?string
     {
-        return $this->login;
+        return $this->email;
     }
 
-    public function setLogin(string $login): static
+    public function setEmail(string $email): static
     {
-        $this->login = $login;
+        $this->email = $email;
 
         return $this;
     }
 
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     *
+     * @return list<string>
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -64,27 +107,12 @@ class User
         return $this;
     }
 
-    public function getName(): ?string
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
     {
-        return $this->Name;
-    }
-
-    public function setName(string $Name): static
-    {
-        $this->Name = $Name;
-
-        return $this;
-    }
-
-    public function getSurname(): ?string
-    {
-        return $this->Surname;
-    }
-
-    public function setSurname(string $Surname): static
-    {
-        $this->Surname = $Surname;
-
-        return $this;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }
