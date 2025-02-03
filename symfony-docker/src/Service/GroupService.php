@@ -1,12 +1,13 @@
 <?php
+namespace App\Service;
 
 use App\Entity\Group;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class GroupService {
 
-    private EntityManager $entityManager;
-    public function __construct(EntityManager $entityManager){
+    private EntityManagerInterface $entityManager;
+    public function __construct(EntityManagerInterface $entityManager){
         $this->entityManager = $entityManager;
     }
 
@@ -33,7 +34,7 @@ class GroupService {
         if (!$group) {
             return [];
         }
-        return $group->getShedualeDays();
+        return $group->getScheduleDays();
     }
 
     public function createGroup(Group $group): Group{

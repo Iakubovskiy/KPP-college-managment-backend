@@ -1,15 +1,16 @@
 <?php
+namespace App\Service;
 
 use App\Entity\Grade;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class GradeService{
-    private EntityManager $em;
+    private EntityManagerInterface $em;
 
-    public function __construct(EntityManager $em){
+    public function __construct(EntityManagerInterface $em){
         $this->em = $em;
     }
-    
+
     public function createGrade(Grade $grade): Grade{
         $this->em->persist($grade);
         $this->em->flush();

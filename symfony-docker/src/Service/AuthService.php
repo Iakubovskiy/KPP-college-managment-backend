@@ -1,23 +1,24 @@
 <?php
+namespace App\Service;
 
 use App\Entity\Admin;
 use App\Entity\Group;
 use App\Entity\Student;
 use App\Entity\Teacher;
 use App\Entity\User;
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthService {
-    private EntityManager $em;
-    private UserPasswordHasher $passwordHasher;
+    private EntityManagerInterface $em;
+    private UserPasswordHasherInterface $passwordHarsher;
 
-    public function __construct(EntityManager $em, UserPasswordHasher $passwordHasher) {
+    public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordHarsher) {
         $this->em = $em;
-        $this->passwordHasher = $passwordHasher;
+        $this->passwordHarsher = $passwordHarsher;
     }
 
-    public function registe(string $email, string $password, string $role, array $extraData): User {
+    public function registe(string $email, string $password, string $role, string $firstName, string $surname, array $extraData): User {
         $existingUser = $this->em->getRepository(User::class)->findOneBy(["email"=> $email]);
         if($existingUser) {
             throw new \Exception("This email is allready used");
@@ -49,12 +50,14 @@ class AuthService {
             case 'ROLE_TEACHER':
                 $user = new Teacher();
                 break;
-            
+
             default:
                 throw new \Exception('invalide role');
         }
+        $user->setFirstName($firstName);
+        $user->setSurname($surname);
         $user->setEmail($email);
-        $hashed_password = $this->passwordHasher->hashPassword($user, $password);
+        $hashed_password = $this->passwordHarsher->hashPassword($user, $password);
         $user->setPassword($hashed_password);
 
         $this->em->persist($user);

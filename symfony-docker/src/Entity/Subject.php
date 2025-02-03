@@ -21,8 +21,8 @@ class Subject
     #[ORM\Column]
     private ?int $hoursPerWeek = null;
 
-    #[ORM\OneToMany(targetEntity: Scheduale::class, mappedBy: 'subject')]
-    private Collection $schedual_days;
+    #[ORM\OneToMany(targetEntity: Schedule::class, mappedBy: 'subject')]
+    private Collection $schedule_days;
 
     #[ORM\ManyToOne(targetEntity: Teacher::class, inversedBy:'subjects')]
     private Teacher $teacher;
@@ -32,7 +32,7 @@ class Subject
 
     public function __construct()
     {
-        $this->schedual_days = new ArrayCollection();
+        $this->schedule_days = new ArrayCollection();
     }
 
 
@@ -63,11 +63,11 @@ class Subject
     }
 
     public function getSchedules(): Collection{
-        return $this->schedual_days;
+        return $this->schedule_days;
     }
 
     public function setSchedules(Collection $schedual_days): static{
-        $this->schedual_days = $schedual_days;
+        $this->schedule_days = $schedual_days;
         return $this;
     }
 
@@ -94,7 +94,7 @@ class Subject
         $this->hoursPerWeek = $subject->getHoursPerWeek();
         $this->teacher = $subject->getTeachers();
         $this->grades = $subject->getGrades();
-        $this->schedual_days = $subject->getSchedules();
+        $this->schedule_days = $subject->getSchedules();
         return $this;
     }
 

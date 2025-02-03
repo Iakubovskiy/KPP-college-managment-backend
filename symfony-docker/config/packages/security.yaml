@@ -20,6 +20,15 @@ security:
                 check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api_doc:
+            pattern: ^/api/doc
+            security: false
+        api_login:
+            pattern: ^/api/login
+            security: false
+        api_register:
+            pattern: ^/api/register
+            security: false
         api:
             pattern: ^/api
             stateless: true
@@ -31,6 +40,8 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

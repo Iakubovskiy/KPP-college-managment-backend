@@ -1,16 +1,17 @@
 <?php
+namespace App\Service;
 
 use App\Entity\Teacher;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class TeacherService{
-    private EntityManager $em;
+    private EntityManagerInterface $em;
 
-    public function __construct(EntityManager $em){
+    public function __construct(EntityManagerInterface $em){
         $this->em = $em;
     }
 
-    public function getTeacherSchedual(int $id): array{
+    public function getTeacherSchedule(int $id): array{
         /**
          * @var Teacher $teacher
          */
@@ -19,10 +20,10 @@ class TeacherService{
             return [];
         }
         $subjects = $teacher->getSubjects();
-        $scheduale = [];
+        $schedules = [];
         foreach($subjects as $subject){
-            foreach($subject->setSchedules() as $schedule){
-                $scheduale[]=[
+            foreach($subject->getSchedules() as $schedule){
+                $schedules[]=[
                     'subject'=> $subject->getName(),
                     'day'=> $subject->getDay(),
                     'time'=> $schedule->getTime()->format('H:i'),
@@ -30,10 +31,10 @@ class TeacherService{
                 ];
             }
         }
-        return $scheduale;
+        return $schedules;
     }
 
-    public function getTeacherSchedualForDay(int $id, string $day): array{
+    public function getTeacherScheduleForDay(int $id, string $day): array{
         /**
          * @var Teacher $teacher
          */
@@ -42,11 +43,11 @@ class TeacherService{
             return [];
         }
         $subjects = $teacher->getSubjects();
-        $scheduale = [];
+        $schedules = [];
         foreach($subjects as $subject){
             foreach($subject->setSchedules() as $schedule){
                 if($schedule->getDay() == $day){
-                    $scheduale[]=[
+                    $schedules[]=[
                         'subject'=> $subject->getName(),
                         'day'=> $subject->getDay(),
                         'time'=> $schedule->getTime()->format('H:i'),
@@ -55,6 +56,6 @@ class TeacherService{
                 }
             }
         }
-        return $scheduale;
+        return $schedules;
     }
 }

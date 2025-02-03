@@ -1,11 +1,12 @@
 <?php
+namespace App\Service;
 
 use App\Entity\Subject;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class SubjectService{
-    private EntityManager $em;
-    public function __construct(EntityManager $em)
+    private EntityManagerInterface $em;
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

@@ -29,6 +29,12 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     protected ?string $email = null;
 
+    #[ORM\Column(length: 50)]
+    protected ?string $firstName = null;
+
+    #[ORM\Column(length: 50)]
+    protected ?string $surname = null;
+
     /**
      * @var list<string> The user roles
      */
@@ -104,6 +110,22 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->password = $password;
 
+        return $this;
+    }
+
+    public function getFirstName(): ?string{
+        return $this->firstName;
+    }
+    public function setFirstName(string $firstName): static{
+        $this->firstName = $firstName;
+        return $this;
+    }
+
+    public function getSurname(): ?string{
+        return $this->surname;
+    }
+    public function setSurname(string $surname): static{
+        $this->surname = $surname;
         return $this;
     }
 
