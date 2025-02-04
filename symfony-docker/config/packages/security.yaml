@@ -32,6 +32,7 @@ security:
         api:
             pattern: ^/api
             stateless: true
+            security: false
             
         main: 
             

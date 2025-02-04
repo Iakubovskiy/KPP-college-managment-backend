@@ -29,7 +29,7 @@ class GroupService {
         return $group->getStudents();
     }
 
-    public function getGroupSchedual(int $group_id) : array {
+    public function getGroupSchedule(int $group_id) : array {
         $group = $this->entityManager->getRepository(Group::class)->find($group_id);
         if (!$group) {
             return [];
@@ -52,6 +52,7 @@ class GroupService {
             $group->setName($data["name"]);
         }
         $this->entityManager->flush();
+        return $group;
     }
 
     public function deleteGroup(int $id) : bool {
