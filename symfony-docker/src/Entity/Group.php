@@ -6,6 +6,7 @@ use App\Repository\GroupRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
@@ -14,15 +15,21 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+
+    #[Groups(["list", "details"])]
+
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(["list", "details"])]
     private ?string $name = null;
 
     #[ORM\OneToMany(targetEntity: Student::class, mappedBy: 'group')]
+    #[Groups(["details"])]
     private Collection $students;
 
     #[ORM\OneToMany(targetEntity: Schedule::class, mappedBy:'group')]
+    #[Groups(["details"])]
     private Collection $schedule_days;
 
     public function __construct()

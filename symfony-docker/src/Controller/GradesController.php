@@ -8,20 +8,24 @@ use App\Entity\Subject;
 use App\Entity\Teacher;
 use App\Service\GradeService;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use JMS\Serializer\SerializerInterface;
 
 final class GradesController extends AbstractController
 {
     private GradeService $gradeService;
     private EntityManagerInterface $em;
-    public function __construct(GradeService $gradeService, EntityManagerInterface $em){
+    private SerializerInterface $serializer;
+    public function __construct(GradeService $gradeService, EntityManagerInterface $em, SerializerInterface $serializer){
         $this->gradeService = $gradeService;
         $this->em = $em;
+        $this->serializer = $serializer;
     }
 
 
@@ -74,7 +78,12 @@ final class GradesController extends AbstractController
         $grade->setTeacher($this->em->getRepository(Teacher::class)->find($data['teacher_id']));
 
         $this->gradeService->createGrade($grade);
-        return new JsonResponse($grade, Response::HTTP_CREATED);
+        $json = $this->serializer->serialize(
+            $grade,
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(['details']),
+        );
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
     #[Route("/api/grades/{id}", name: "api_update_grade", methods: ["PUT"])]
@@ -124,7 +133,12 @@ final class GradesController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $grade = $data['grade'];
         $new_grade = $this->gradeService->updateGrade($id, $grade);
-        return new JsonResponse($new_grade, Response::HTTP_OK);
+        $json = $this->serializer->serialize(
+            $new_grade,
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(['details']),
+        );
+        return new JsonResponse($json, Response::HTTP_OK);
     }
 
     #[Route("/api/grades/{id}", name: "api_delete_grade", methods: ["DELETE"])]
@@ -152,8 +166,8 @@ final class GradesController extends AbstractController
     {
         $is_deleted = $this->gradeService->deleteGrade($id);
         if($is_deleted)
-            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+            return new JsonResponse(true, Response::HTTP_NO_CONTENT);
         else
-            return new JsonResponse(null, Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(false, Response::HTTP_BAD_REQUEST);
     }
 }

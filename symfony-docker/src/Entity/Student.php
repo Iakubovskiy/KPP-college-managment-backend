@@ -6,17 +6,21 @@ use App\Repository\StudentRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
 class Student extends User
 {
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["list", "details"])]
     private ?\DateTimeInterface $DateOfBirth = null;
 
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'students')]
+    #[Groups(["list", "details"])]
     private Group $group;
 
     #[ORM\OneToMany(targetEntity: Grade::class, mappedBy:'student')]
+    #[Groups(["details"])]
     private Collection $grades;
 
     public function __construct(){

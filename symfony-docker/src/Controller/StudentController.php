@@ -8,13 +8,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 
 final class StudentController extends AbstractController
 {
     private StudentService $studentService;
+    private SerializerInterface $serializer;
 
-    public function __construct(StudentService $studentService){
+    public function __construct(StudentService $studentService, SerializerInterface $serializer){
         $this->studentService = $studentService;
+        $this->serializer = $serializer;
     }
 
     #[Route('/api/student/{id}/{subject_id}', name: 'app_student_grades', methods:["GET"])]
@@ -65,6 +69,12 @@ final class StudentController extends AbstractController
     )]
     public function getStudentGradesInSubject(int $id, int $subject_id): JsonResponse
     {
-        return new JsonResponse($this->studentService->getStudentGradesInSubject($id, $subject_id), Response::HTTP_OK);
+        $studentWithGrades = $this->studentService->getStudentGradesInSubject($id, $subject_id);
+        $json = $this->serializer->serialize(
+            $studentWithGrades,
+            "json",
+            SerializationContext::create()->setSerializeNull(true)->setGroups(["details"])
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }

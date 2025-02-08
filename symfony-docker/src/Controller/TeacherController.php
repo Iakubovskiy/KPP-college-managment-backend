@@ -8,13 +8,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 
 final class TeacherController extends AbstractController
 {
     private TeacherService  $teacherService;
+    private SerializerInterface $serializer;
 
-    public function __construct(TeacherService $teacherService){
+    public function __construct(TeacherService $teacherService, SerializerInterface $serializer){
         $this->teacherService = $teacherService;
+        $this->serializer = $serializer;
     }
     #[Route('/api/teacher/{id}', name: 'app_teacher_schedule', methods: ['GET'])]
     #[OA\Get(
@@ -65,7 +69,12 @@ final class TeacherController extends AbstractController
     )]
     public function getTeacherSchedule(int $id): JsonResponse
     {
-       return new JsonResponse($this->teacherService->getTeacherSchedule($id));
+        $json = $this->serializer->serialize(
+            $this->teacherService->getTeacherSchedule($id),
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(["details"])
+        );
+       return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
     #[Route('/api/teacher/{id}/{day}', name: 'app_teacher_schedule_day)', methods: ['GET'])]
     #[OA\Get(
@@ -122,6 +131,11 @@ final class TeacherController extends AbstractController
     )]
     public function getTeacherScheduleForDay(int $id, string $day): JsonResponse
     {
-        return new JsonResponse($this->teacherService->getTeacherScheduleForDay($id, $day));
+        $json = $this->serializer->serialize(
+            $this->teacherService->getTeacherScheduleForDay($id, $day),
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(["details"])
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }

@@ -13,14 +13,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 
 final class ScheduleController extends AbstractController
 {
     private ScheduleService  $scheduleService;
     private EntityManagerInterface $entityManager;
-    public function __construct(ScheduleService $scheduleService, EntityManagerInterface $entityManager){
+    private SerializerInterface $serializer;
+
+    public function __construct(ScheduleService $scheduleService, EntityManagerInterface $entityManager, SerializerInterface $serializer){
         $this->scheduleService = $scheduleService;
         $this->entityManager = $entityManager;
+        $this->serializer = $serializer;
     }
     #[Route('/api/schedule', name: 'app_schedule', methods: ['POST'])]
     #[OA\Post(
@@ -81,8 +86,12 @@ final class ScheduleController extends AbstractController
         $record->setTime($data['time']);
         $record->setSubject($this->entityManager->getRepository(Subject::class)->find($data['subject_id']));
         $record->setGroup($this->entityManager->getRepository(Group::class)->find($data['group_id']));
-
-        return new JsonResponse($this->scheduleService->createScheduleRecord($record), Response::HTTP_CREATED);
+        $json = $this->serializer->serialize(
+            $this->scheduleService->createScheduleRecord($record),
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(['details']),
+        );
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
     #[Route('/api/schedule/{id}', name: 'app_delete_schedule', methods: ['DELETE'])]
@@ -181,6 +190,11 @@ final class ScheduleController extends AbstractController
         $record->setTime($data['time']);
         $record->setSubject($this->entityManager->getRepository(Subject::class)->find($data['subject_id']));
         $record->setGroup($this->entityManager->getRepository(Group::class)->find($data['group_id']));
-        return new JsonResponse($this->scheduleService->updateSchedule($id, $record), Response::HTTP_OK);
+        $json = $this->serializer->serialize(
+            $this->scheduleService->updateSchedule($id, $record),
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(['details']),
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }

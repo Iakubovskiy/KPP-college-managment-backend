@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\GradesRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: GradesRepository::class)]
 class Grade
@@ -12,21 +13,27 @@ class Grade
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["list", "details"])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(["list", "details"])]
     private ?int $grade = null;
 
     #[ORM\Column]
+    #[Groups(["list", "details"])]
     private ?DateTime $date_and_time = null;
 
     #[ORM\ManyToOne(targetEntity: Student::class, inversedBy:"grades")]
+    #[Groups(["list", "details"])]
     private Student $student;
 
     #[ORM\ManyToOne(targetEntity: Subject::class, inversedBy:"grades")]
+    #[Groups(["list", "details"])]
     private Subject $subject;
 
     #[ORM\ManyToOne(targetEntity:Teacher::class, inversedBy:"grades")]
+    #[Groups(["list", "details"])]
     private Teacher $teacher;
 
     public function getId(): ?int{

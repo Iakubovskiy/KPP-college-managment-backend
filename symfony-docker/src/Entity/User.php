@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -24,21 +25,26 @@ abstract class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["list", "details"])]
     protected ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(["list", "details"])]
     protected ?string $email = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(["list", "details"])]
     protected ?string $firstName = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(["list", "details"])]
     protected ?string $surname = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(["list", "details"])]
     protected array $roles = [];
 
     /**

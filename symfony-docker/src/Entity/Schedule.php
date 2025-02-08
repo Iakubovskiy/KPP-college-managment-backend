@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ScheduleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ScheduleRepository::class)]
 class Schedule
@@ -12,18 +13,23 @@ class Schedule
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["list", "details"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(["list", "details"])]
     private ?string $Day = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups(["list", "details"])]
     private ?\DateTimeInterface $time = null;
 
     #[ORM\ManyToOne(targetEntity: Subject::class, inversedBy: "schedual_days")]
+    #[Groups(["list", "details"])]
     private Subject $subject;
 
-    #[ORM\ManyToOne(targetEntity: Group::class, inversedBy:"sheduale_days")]
+    #[ORM\ManyToOne(targetEntity: Group::class, inversedBy:"schedule_days")]
+    #[Groups(["list", "details"])]
     private Group $group;
 
     public function getId(): ?int

@@ -4,18 +4,22 @@ namespace App\Controller;
 
 use App\Entity\Group;
 use App\Service\GroupService;
+use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use JMS\Serializer\SerializerInterface;
 
 final class GroupController extends AbstractController
 {
     private readonly GroupService $groupService;
-    public function __construct(GroupService $groupService){
+    private readonly SerializerInterface $serializer;
+    public function __construct(GroupService $groupService, SerializerInterface $serializer){
         $this->groupService = $groupService;
+        $this->serializer = $serializer;
     }
     #[Route('/api/group/', name: 'app_groups', methods: ['GET'])]
     #[OA\Get(
@@ -40,7 +44,14 @@ final class GroupController extends AbstractController
     )]
     public function getAll(): JsonResponse
     {
-        return new JsonResponse($this->groupService->getAllGroups(), Response::HTTP_OK);
+        $groups = $this->groupService->getAllGroups();
+        $json = $this->serializer->serialize(
+            $groups,
+            'json',
+            SerializationContext::create()->setGroups(['list'])->setSerializeNull(true),
+        );
+
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/group/{id}', name: 'app_group', methods: ['GET'])]
@@ -68,7 +79,13 @@ final class GroupController extends AbstractController
         )
     )]
     public function getGroup(int $id): JsonResponse{
-        return new JsonResponse($this->groupService->getGroupById($id), Response::HTTP_OK);
+        $group = $this->groupService->getGroupById($id);
+        $json = $this->serializer->serialize(
+            $group,
+            'json',
+            SerializationContext::create()->setGroups(['details'])->setSerializeNull(true),
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/group-students/{id}', name: 'app_group_students', methods: ['GET'])]
@@ -99,7 +116,13 @@ final class GroupController extends AbstractController
         )
     )]
     public function getGroupStudents(int $id): JsonResponse{
-        return new JsonResponse($this->groupService->getAllStudentsInGroup($id), Response::HTTP_OK);
+        $students = $this->groupService->getAllStudentsInGroup($id);
+        $json = $this->serializer->serialize(
+            $students,
+            'json',
+            SerializationContext::create()->setGroups(['details'])->setSerializeNull(true),
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/group-schedule/{id}', name: 'app_group_schedule', methods: ['GET'])]
@@ -130,7 +153,13 @@ final class GroupController extends AbstractController
         )
     )]
     public function getGroupSchedule(int $id): JsonResponse{
-        return new JsonResponse($this->groupService->getGroupSchedule($id), Response::HTTP_OK);
+        $schedule = $this->groupService->getGroupSchedule($id);
+        $json = $this->serializer->serialize(
+            $schedule,
+            'json',
+            SerializationContext::create()->setGroups(['details'])->setSerializeNull(true),
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/group', name: 'app_create_group', methods: ['POST'])]
@@ -165,7 +194,13 @@ final class GroupController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $group = new Group();
         $group->setName($data['name']);
-        return new JsonResponse($this->groupService->createGroup($group), Response::HTTP_CREATED);
+        $newGroup = $this->groupService->createGroup($group);
+        $json = $this->serializer->serialize(
+            $newGroup,
+            'json',
+            SerializationContext::create()->setGroups(['details'])->setSerializeNull(true),
+        );
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
     #[Route('/api/group/{id}', name: 'app_update_group', methods: ['PUT'])]
@@ -205,7 +240,13 @@ final class GroupController extends AbstractController
 
     public function updateGroup(Request $request, int $id): JsonResponse{
         $data = json_decode($request->getContent(), true);
-        return new JsonResponse($this->groupService->updateGroup($id, $data), Response::HTTP_OK);
+        $updateGroup = $this->groupService->updateGroup($id, $data);
+        $json = $this->serializer->serialize(
+            $updateGroup,
+            'json',
+            SerializationContext::create()->setGroups(['details'])->setSerializeNull(true),
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/group/{id}/delete', name: 'app_group_delete', methods: ['DELETE'])]
@@ -226,6 +267,10 @@ final class GroupController extends AbstractController
         description: "Група успішно видалена"
     )]
     public function deleteGroup(int $id): JsonResponse{
-        return new JsonResponse($this->groupService->deleteGroup($id), Response::HTTP_OK);
+        $isDeleted = $this->groupService->deleteGroup($id);
+        if(!$isDeleted){
+            return new JsonResponse($isDeleted, Response::HTTP_BAD_REQUEST);
+        }
+        return new JsonResponse($isDeleted, Response::HTTP_OK);
     }
 }

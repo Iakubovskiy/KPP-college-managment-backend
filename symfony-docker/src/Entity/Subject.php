@@ -6,6 +6,7 @@ use App\Repository\SubjectRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
 class Subject
@@ -13,21 +14,27 @@ class Subject
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["list", "details"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 70)]
+    #[Groups(["list", "details"])]
     private ?string $Name = null;
 
     #[ORM\Column]
+    #[Groups(["list", "details"])]
     private ?int $hoursPerWeek = null;
 
     #[ORM\OneToMany(targetEntity: Schedule::class, mappedBy: 'subject')]
+    #[Groups(["details"])]
     private Collection $schedule_days;
 
     #[ORM\ManyToOne(targetEntity: Teacher::class, inversedBy:'subjects')]
+    #[Groups(["list", "details"])]
     private Teacher $teacher;
 
     #[ORM\OneToMany(targetEntity:Grade::class, mappedBy:'subject')]
+    #[Groups(["details"])]
     private Collection $grades;
 
     public function __construct()

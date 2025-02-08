@@ -10,12 +10,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 
 final class SubjectController extends AbstractController
 {
     private readonly SubjectService $subjectService;
-    public function __construct(SubjectService $subjectService){
+    private readonly SerializerInterface $serializer;
+    public function __construct(SubjectService $subjectService, SerializerInterface $serializer){
         $this->subjectService = $subjectService;
+        $this->serializer = $serializer;
     }
     #[Route('/api/subject', name: 'app_subjects', methods: ['GET'])]
     #[OA\Get(
@@ -38,7 +42,12 @@ final class SubjectController extends AbstractController
     )]
     public function getAll(): JsonResponse
     {
-        return new JsonResponse($this->subjectService->getAllSubjects(), Response::HTTP_OK);
+        $json = $this->serializer->serialize(
+            $this->subjectService->getAllSubjects(),
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(["list"])
+        );
+        return new JsonResponse($json, Response::HTTP_OK);
     }
 
     #[Route('/api/subject/{id}', name: 'app_subject', methods: ['GET'])]
@@ -70,7 +79,12 @@ final class SubjectController extends AbstractController
         description: "Предмет не знайдено"
     )]
     public function getSubject(int $id): JsonResponse{
-        return new JsonResponse($this->subjectService->getSubjectsById($id), Response::HTTP_OK);
+        $json = $this->serializer->serialize(
+            $this->subjectService->getSubjectsById($id),
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(["details"])
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/subject', name: 'app_create_subject', methods: ['POST'])]
@@ -109,7 +123,12 @@ final class SubjectController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $subject = new Subject();
         $subject->setName($data['name']);
-        return new JsonResponse($this->subjectService->createSubject($subject), Response::HTTP_CREATED);
+        $json = $this->serializer->serialize(
+            $this->subjectService->createSubject($subject),
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(["details"])
+        );
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
     #[Route('/api/subject/{id}', name: 'app_update_subject', methods: ['PUT'])]
@@ -152,7 +171,12 @@ final class SubjectController extends AbstractController
     )]
     public function updateSubject(Request $request, int $id): JsonResponse{
         $data = json_decode($request->getContent(), true);
-        return new JsonResponse($this->subjectService->updateSubject($id, $data), Response::HTTP_OK);
+        $json = $this->serializer->serialize(
+            $this->subjectService->updateSubject($id, $data),
+            'json',
+            SerializationContext::create()->setSerializeNull(true)->setGroups(["details"]),
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/subject/{id}/delete', name: 'app_subject_delete', methods: ['DELETE'])]

@@ -3,18 +3,22 @@
 namespace App\Controller;
 
 use App\Service\AuthService;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
 
 final class AuthController extends AbstractController
 {
     private AuthService $authService;
-    public function __construct(AuthService $authService){
+    private readonly SerializerInterface $serializer;
+    public function __construct(AuthService $authService, SerializerInterface $serializer){
         $this->authService = $authService;
+        $this->serializer = $serializer;
     }
     #[Route("/api/login_check", name: "api_login", methods: ["POST"])]
     #[OA\Post(
@@ -89,7 +93,7 @@ final class AuthController extends AbstractController
         response: 400,
         description: "Помилка валідації"
     )]
-    public function  register(Request $request, LoggerInterface $logger): JsonResponse
+    public function  register(Request $request): JsonResponse
     {
         $data = (json_decode($request->getContent(), true));
         $role = $data["role"];
@@ -105,8 +109,9 @@ final class AuthController extends AbstractController
         if($group_id)
             $extraData["group_id"] = $group_id;
 
-        return new JsonResponse(["new user" =>
-            $this->authService->registe($email, $password, $role, $name, $surname, $extraData)
-        ]);
+        $newUser = $this->authService->registe($email, $password, $role, $name, $surname, $extraData);
+        $json = $this->serializer->serialize($newUser, 'json', SerializationContext::create()->setGroups(['list']));
+
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 }
