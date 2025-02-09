@@ -249,9 +249,9 @@ final class GroupController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/group/{id}/delete', name: 'app_group_delete', methods: ['DELETE'])]
+    #[Route('/api/group/{id}/', name: 'app_group_delete', methods: ['DELETE'])]
     #[OA\Delete(
-        path: "/api/group/{id}/delete",
+        path: "/api/group/{id}/",
         summary: "Видалення групи",
         tags: ["Groups"]
     )]

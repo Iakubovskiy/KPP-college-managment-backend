@@ -179,9 +179,9 @@ final class SubjectController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/subject/{id}/delete', name: 'app_subject_delete', methods: ['DELETE'])]
+    #[Route('/api/subject/{id}', name: 'app_subject_delete', methods: ['DELETE'])]
     #[OA\Delete(
-        path: "/api/subject/{id}/delete",
+        path: "/api/subject/{id}",
         summary: "Видалення предмету",
         tags: ["Subjects"]
     )]
