@@ -24,7 +24,7 @@ class Schedule
     #[Groups(["list", "details"])]
     private ?\DateTimeInterface $time = null;
 
-    #[ORM\ManyToOne(targetEntity: Subject::class, inversedBy: "schedual_days")]
+    #[ORM\ManyToOne(targetEntity: Subject::class, inversedBy: "schedule_days")]
     #[Groups(["list", "details"])]
     private Subject $subject;
 
