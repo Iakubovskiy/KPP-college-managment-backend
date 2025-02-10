@@ -25,7 +25,7 @@ class TeacherService{
             foreach($subject->getSchedules() as $schedule){
                 $schedules[]=[
                     'subject'=> $subject->getName(),
-                    'day'=> $subject->getDay(),
+                    'day'=> $schedule->getDay(),
                     'time'=> $schedule->getTime()->format('H:i'),
                     'group'=> $schedule->getGroup()->getName(),
                 ];
@@ -45,11 +45,11 @@ class TeacherService{
         $subjects = $teacher->getSubjects();
         $schedules = [];
         foreach($subjects as $subject){
-            foreach($subject->setSchedules() as $schedule){
+            foreach($subject->getSchedules() as $schedule){
                 if($schedule->getDay() == $day){
                     $schedules[]=[
                         'subject'=> $subject->getName(),
-                        'day'=> $subject->getDay(),
+                        'day'=> $schedule->getDay(),
                         'time'=> $schedule->getTime()->format('H:i'),
                         'group'=> $schedule->getGroup()->getName(),
                     ];

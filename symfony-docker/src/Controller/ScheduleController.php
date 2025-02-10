@@ -83,7 +83,8 @@ final class ScheduleController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $record = new Schedule();
         $record->setDay($data['day']);
-        $record->setTime($data['time']);
+        $time = new \DateTime($data['time']);
+        $record->setTime($time);
         $record->setSubject($this->entityManager->getRepository(Subject::class)->find($data['subject_id']));
         $record->setGroup($this->entityManager->getRepository(Group::class)->find($data['group_id']));
         $json = $this->serializer->serialize(

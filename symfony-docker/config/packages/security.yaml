@@ -33,6 +33,7 @@ security:
             pattern: ^/api
             stateless: true
             security: false
+            #jwt: ~
             
         main: 
             
@@ -43,7 +44,7 @@ security:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/students, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

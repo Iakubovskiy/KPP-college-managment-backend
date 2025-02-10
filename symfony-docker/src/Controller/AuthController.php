@@ -95,20 +95,25 @@ final class AuthController extends AbstractController
     )]
     public function  register(Request $request): JsonResponse
     {
-        $data = (json_decode($request->getContent(), true));
+        $data = json_decode($request->getContent(), true);
+        if ($data === null) {
+            return new JsonResponse(["message" => "Некоректний JSON", "data"=>$data], Response::HTTP_BAD_REQUEST);
+        }
         $role = $data["role"];
         $email = $data["email"];
         $password = $data["password"];
-        $dateOfBirth = $data["dateOfBirth"] ?? null;
-        $group_id = $data["group_id"] ?? null;
         $name = $data["name"];
         $surname = $data["surname"];
         $extraData = [];
-        if($dateOfBirth)
+        if(array_key_exists("dateOfBirth", $data)){
+            $dateOfBirth = $data["dateOfBirth"] ?? null;
             $extraData["dateOfBirth"] = $dateOfBirth;
-        if($group_id)
-            $extraData["group_id"] = $group_id;
+        }
 
+        if(array_key_exists("group_id", $data)) {
+            $group_id = $data["group_id"] ?? null;
+            $extraData["group_id"] = $group_id;
+        }
         $newUser = $this->authService->registe($email, $password, $role, $name, $surname, $extraData);
         $json = $this->serializer->serialize($newUser, 'json', SerializationContext::create()->setGroups(['list']));
 

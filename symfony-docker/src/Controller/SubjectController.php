@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Subject;
+use App\Entity\Teacher;
 use App\Service\SubjectService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,9 +19,11 @@ final class SubjectController extends AbstractController
 {
     private readonly SubjectService $subjectService;
     private readonly SerializerInterface $serializer;
-    public function __construct(SubjectService $subjectService, SerializerInterface $serializer){
+    private readonly EntityManagerInterface $entityManager;
+    public function __construct(SubjectService $subjectService, SerializerInterface $serializer, EntityManagerInterface $entityManager){
         $this->subjectService = $subjectService;
         $this->serializer = $serializer;
+        $this->entityManager = $entityManager;
     }
     #[Route('/api/subject', name: 'app_subjects', methods: ['GET'])]
     #[OA\Get(
@@ -45,9 +49,9 @@ final class SubjectController extends AbstractController
         $json = $this->serializer->serialize(
             $this->subjectService->getAllSubjects(),
             'json',
-            SerializationContext::create()->setSerializeNull(true)->setGroups(["list"])
+            SerializationContext::create()->setGroups(['list'])->setSerializeNull(true),
         );
-        return new JsonResponse($json, Response::HTTP_OK);
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/subject/{id}', name: 'app_subject', methods: ['GET'])]
@@ -121,8 +125,27 @@ final class SubjectController extends AbstractController
     public function createSubject(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+        $requiredKeys = ['name', 'hours_per_week', 'teacher_id'];
+        $missingKeys = [];
+
+        foreach ($requiredKeys as $key) {
+            if (!array_key_exists($key, $data)) {
+                $missingKeys[] = $key;
+            }
+        }
+
+        if (!empty($missingKeys)) {
+            return new JsonResponse(
+                ["message" => "Не вистачає наступних обов'язкових полів: " . implode(", ", $missingKeys)],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         $subject = new Subject();
         $subject->setName($data['name']);
+        $subject->setHoursPerWeek($data['hours_per_week']);
+        $teacher = $this->entityManager->getRepository(Teacher::class)->find($data['teacher_id']);
+        $subject->setTeachers($teacher);
         $json = $this->serializer->serialize(
             $this->subjectService->createSubject($subject),
             'json',
@@ -171,8 +194,20 @@ final class SubjectController extends AbstractController
     )]
     public function updateSubject(Request $request, int $id): JsonResponse{
         $data = json_decode($request->getContent(), true);
+        $newSubject = $this->subjectService->getSubjectsById($id);
+        if(array_key_exists("name", $data)){
+            $newSubject->setName($data['name']);
+        }
+        if(array_key_exists("hours_per_week", $data)){
+            $newSubject->setHoursPerWeek($data['hours_per_week']);
+        }
+        if(array_key_exists("teacher_id", $data)){
+            $teacher = $this->entityManager->getRepository(Teacher::class)->find($data['teacher_id']);
+            $newSubject->setTeachers($teacher);
+        }
+
         $json = $this->serializer->serialize(
-            $this->subjectService->updateSubject($id, $data),
+            $this->subjectService->updateSubject($id, $newSubject),
             'json',
             SerializationContext::create()->setSerializeNull(true)->setGroups(["details"]),
         );
