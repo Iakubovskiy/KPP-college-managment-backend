@@ -73,8 +73,8 @@ class Subject
         return $this->schedule_days;
     }
 
-    public function setSchedules(Collection $schedual_days): static{
-        $this->schedule_days = $schedual_days;
+    public function setSchedules(Collection $schedule_days): static{
+        $this->schedule_days = $schedule_days;
         return $this;
     }
 

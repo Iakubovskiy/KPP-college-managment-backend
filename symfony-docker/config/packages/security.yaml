@@ -24,7 +24,7 @@ security:
             pattern: ^/api/doc
             security: false
         api_login:
-            pattern: ^/api/login
+            pattern: ^/api/login_check
             security: false
         api_register:
             pattern: ^/api/register
@@ -32,8 +32,8 @@ security:
         api:
             pattern: ^/api
             stateless: true
-            security: false
-            #jwt: ~
+            security: true
+            jwt: ~
             
         main: 
             
@@ -44,7 +44,8 @@ security:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/students, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/group, roles: [ 'ROLE_TEACHER' ] }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

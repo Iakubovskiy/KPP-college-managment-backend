@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Group;
+use App\Entity\Schedule;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GroupService {
@@ -35,6 +36,30 @@ class GroupService {
             return [];
         }
         return $group->getScheduleDays();
+    }
+
+    public function getGroupScheduleForDay(int $id, string $day) : array
+    {
+        $group = $this->entityManager->getRepository(Group::class)->find($id);
+        if(!$group){
+            return [];
+        }
+        $schedule = $group->getScheduleDays();
+        $schedules = [];
+        /**
+         *@var Schedule $record
+         */
+        foreach ($schedule as $record) {
+            if($record->getDay() === $day){
+                $schedules[] = [
+                    'subject'=> $record->getSubject()->getName(),
+                    'day'=> $record->getDay(),
+                    'time'=> $record->getTime()->format('H:i'),
+                    'group'=> "{$record->getSubject()->getTeachers()->getSurname()} {$record->getSubject()->getTeachers()->getFirstName()}",
+                ];
+            }
+        }
+        return $schedules;
     }
 
     public function createGroup(Group $group): Group{

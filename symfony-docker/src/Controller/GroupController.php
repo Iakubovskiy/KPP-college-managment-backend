@@ -162,6 +162,50 @@ final class GroupController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
+    #[Route('/api/group-schedule/{id}/', name: 'app_group_schedule_day', methods: ['GET'])]
+    #[OA\Get(
+        path: "/api/group-schedule/{id}/{day}",
+        summary: "Отримання розкладу групи на конкретний день",
+        tags: ["Groups"]
+    )]
+    #[OA\Parameter(
+        name: "id",
+        description: "ID групи",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "integer")
+    )]
+    #[OA\Parameter(
+        name: "day",
+        description: "День тижня (Monday, Tuesday, etc.)",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "string")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Розклад групи успішно отримано",
+        content: new OA\JsonContent(
+            type: "array",
+            items: new OA\Items(
+                properties: [
+                    new OA\Property(property: "id", type: "integer", example: 1),
+                    new OA\Property(property: "subject", type: "string", example: "Математика"),
+                    new OA\Property(property: "time", type: "string", format: "date-time", example: "2024-02-05T10:00:00Z")
+                ]
+            )
+        )
+    )]
+    public function getGroupScheduleForDay(int $id, string $day): JsonResponse{
+        $schedule = $this->groupService->getGroupScheduleForDay($id, $day);
+        $json = $this->serializer->serialize(
+            $schedule,
+            'json',
+            SerializationContext::create()->setGroups(['details'])->setSerializeNull(true),
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
     #[Route('/api/group', name: 'app_create_group', methods: ['POST'])]
     #[OA\Post(
         path: "/api/group",
