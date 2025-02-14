@@ -11,6 +11,12 @@ class TeacherService{
         $this->em = $em;
     }
 
+    public function GetAllTeachers(): array
+    {
+        return $this->em->getRepository(Teacher::class)->findAll();
+
+    }
+
     public function getTeacherSchedule(int $id): array{
         /**
          * @var Teacher $teacher
@@ -48,6 +54,7 @@ class TeacherService{
             foreach($subject->getSchedules() as $schedule){
                 if($schedule->getDay() == $day){
                     $schedules[]=[
+                        'id'=> $schedule->getId(),
                         'subject'=> $subject->getName(),
                         'day'=> $schedule->getDay(),
                         'time'=> $schedule->getTime()->format('H:i'),

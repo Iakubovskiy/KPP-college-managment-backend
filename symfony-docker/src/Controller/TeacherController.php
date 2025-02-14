@@ -20,6 +20,39 @@ final class TeacherController extends AbstractController
         $this->teacherService = $teacherService;
         $this->serializer = $serializer;
     }
+
+    #[Route('/api/teacher/', name: 'teacher', methods: ['GET'])]
+    #[OA\Get(
+        path: "/api/teacher/",
+        summary: "Отримання всіх викладачів",
+        tags: ["Teachers"]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Список викладачів групи успішно отримано",
+        content: new OA\JsonContent(
+            type: "array",
+            items: new OA\Items(
+                properties: [
+                    new OA\Property(property: "id", type: "integer", example: 1),
+                    new OA\Property(property: "first_name", type: "string", example: "Іван"),
+                    new OA\Property(property: "surname", type: "string", example: "Петров"),
+                    new OA\Property(property: "email", type: "string", example: "ivan@example.com")
+                ]
+            )
+        )
+    )]
+    public function getAllTeachers(): JsonResponse
+    {
+        $teachers = $this->teacherService->getAllTeachers();
+        $json = $this->serializer->serialize(
+            $teachers,
+            'json',
+            SerializationContext::create()->setSerializeNull(true)
+        );
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
     #[Route('/api/teacher/{id}', name: 'app_teacher_schedule', methods: ['GET'])]
     #[OA\Get(
         path: "/api/teacher/{id}",

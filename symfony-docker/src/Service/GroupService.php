@@ -27,7 +27,10 @@ class GroupService {
 
     public function getAllStudentsInGroup(int $group_id) : array {
         $group = $this->entityManager->getRepository(Group::class)->find($group_id);
-        return $group->getStudents();
+        if (!$group) {
+            return [];
+        }
+        return $group->getStudents()->toArray();
     }
 
     public function getGroupSchedule(int $group_id) : array {
@@ -52,10 +55,11 @@ class GroupService {
         foreach ($schedule as $record) {
             if($record->getDay() === $day){
                 $schedules[] = [
+                    'id'=>$record->getId(),
                     'subject'=> $record->getSubject()->getName(),
                     'day'=> $record->getDay(),
                     'time'=> $record->getTime()->format('H:i'),
-                    'group'=> "{$record->getSubject()->getTeachers()->getSurname()} {$record->getSubject()->getTeachers()->getFirstName()}",
+                    'teacher'=> "{$record->getSubject()->getTeachers()->getSurname()} {$record->getSubject()->getTeachers()->getFirstName()}",
                 ];
             }
         }

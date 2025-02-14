@@ -117,6 +117,9 @@ final class GroupController extends AbstractController
     )]
     public function getGroupStudents(int $id): JsonResponse{
         $students = $this->groupService->getAllStudentsInGroup($id);
+        if($students === []){
+            return new JsonResponse(null,Response::HTTP_NOT_FOUND);
+        }
         $json = $this->serializer->serialize(
             $students,
             'json',
@@ -162,7 +165,7 @@ final class GroupController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/group-schedule/{id}/', name: 'app_group_schedule_day', methods: ['GET'])]
+    #[Route('/api/group-schedule/{id}/{day}', name: 'app_group_schedule_day', methods: ['GET'])]
     #[OA\Get(
         path: "/api/group-schedule/{id}/{day}",
         summary: "Отримання розкладу групи на конкретний день",
@@ -293,7 +296,7 @@ final class GroupController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/group/{id}/', name: 'app_group_delete', methods: ['DELETE'])]
+    #[Route('/api/group/{id}', name: 'app_group_delete', methods: ['DELETE'])]
     #[OA\Delete(
         path: "/api/group/{id}/",
         summary: "Видалення групи",
