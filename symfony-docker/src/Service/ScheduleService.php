@@ -11,6 +11,11 @@ class ScheduleService{
         $this->em = $em;
     }
 
+    public function getAll():array
+    {
+        return $this->em->getRepository(Schedule::class)->findAll();
+    }
+
     public function createScheduleRecord(Schedule $schedule):Schedule{
         $this->em->persist($schedule);
         $this->em->flush();

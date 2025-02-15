@@ -27,6 +27,38 @@ final class ScheduleController extends AbstractController
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
     }
+
+    #[Route('/api/schedule', name: 'schedule', methods: ['GET'])]
+    #[OA\Get(
+        path: "/api/schedule/",
+        summary: "Отримання списку",
+        tags: ["Schedule"],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Список успішно отримано",
+                content: new OA\JsonContent(
+                    type: "array",
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "id", type: "integer", example: 1),
+                            new OA\Property(property: "day", type: "string", example: "Monday"),
+                            new OA\Property(property: "time", type: "string", example: "10:00"),
+                            new OA\Property(property: "group", type: "string", example: "КН-41"),
+                            new OA\Property(property: "subject", type: "string", example: "Математика")
+                        ]
+                    )
+                )
+            )
+        ]
+    )]
+    public function getAll(): JsonResponse
+    {
+        $data = $this->scheduleService->getAll();
+        $json = $this->serializer->serialize($data, 'json', SerializationContext::create()->setSerializeNull(true));
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
     #[Route('/api/schedule', name: 'app_schedule', methods: ['POST'])]
     #[OA\Post(
         path: "/api/schedule",
