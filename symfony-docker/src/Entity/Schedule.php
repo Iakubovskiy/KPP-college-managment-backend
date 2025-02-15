@@ -29,7 +29,7 @@ class Schedule
     private Subject $subject;
 
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy:"schedule_days")]
-    #[Groups(["list", "details"])]
+    #[Groups(["list"])]
     private Group $group;
 
     public function getId(): ?int

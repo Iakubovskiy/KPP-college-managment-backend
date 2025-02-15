@@ -81,7 +81,7 @@ final class GradesController extends AbstractController
         $json = $this->serializer->serialize(
             $grade,
             'json',
-            SerializationContext::create()->setSerializeNull(true)->setGroups(['details']),
+            SerializationContext::create()->setSerializeNull(true)->setGroups(['list']),
         );
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }

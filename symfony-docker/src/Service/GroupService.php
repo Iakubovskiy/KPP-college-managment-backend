@@ -38,7 +38,7 @@ class GroupService {
         if (!$group) {
             return [];
         }
-        return $group->getScheduleDays();
+        return $group->getScheduleDays()->toArray();
     }
 
     public function getGroupScheduleForDay(int $id, string $day) : array

@@ -30,6 +30,7 @@ class TeacherService{
         foreach($subjects as $subject){
             foreach($subject->getSchedules() as $schedule){
                 $schedules[]=[
+                    'id' => $schedule->getId(),
                     'subject'=> $subject->getName(),
                     'day'=> $schedule->getDay(),
                     'time'=> $schedule->getTime()->format('H:i'),

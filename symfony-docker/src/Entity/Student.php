@@ -20,7 +20,6 @@ class Student extends User
     private Group $group;
 
     #[ORM\OneToMany(targetEntity: Grade::class, mappedBy:'student')]
-    #[Groups(["details"])]
     private Collection $grades;
 
     public function __construct(){

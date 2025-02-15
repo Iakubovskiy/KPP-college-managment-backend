@@ -25,11 +25,9 @@ class Group
     private ?string $name = null;
 
     #[ORM\OneToMany(targetEntity: Student::class, mappedBy: 'group')]
-    #[Groups(["details"])]
     private Collection $students;
 
     #[ORM\OneToMany(targetEntity: Schedule::class, mappedBy:'group')]
-    #[Groups(["details"])]
     private Collection $schedule_days;
 
     public function __construct()

@@ -123,7 +123,7 @@ final class GroupController extends AbstractController
         $json = $this->serializer->serialize(
             $students,
             'json',
-            SerializationContext::create()->setGroups(['details'])->setSerializeNull(true),
+            SerializationContext::create()->setGroups(['list'])->setSerializeNull(true),
         );
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }

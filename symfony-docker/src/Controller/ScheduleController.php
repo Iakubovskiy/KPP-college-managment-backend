@@ -55,7 +55,7 @@ final class ScheduleController extends AbstractController
     public function getAll(): JsonResponse
     {
         $data = $this->scheduleService->getAll();
-        $json = $this->serializer->serialize($data, 'json', SerializationContext::create()->setSerializeNull(true));
+        $json = $this->serializer->serialize($data, 'json', SerializationContext::create()->setSerializeNull(true)->setGroups(["list"]));
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
