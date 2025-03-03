@@ -48,7 +48,7 @@ final class TeacherController extends AbstractController
         $json = $this->serializer->serialize(
             $teachers,
             'json',
-            SerializationContext::create()->setSerializeNull(true)
+            SerializationContext::create()->setSerializeNull(true)->setGroups(['list'])
         );
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }

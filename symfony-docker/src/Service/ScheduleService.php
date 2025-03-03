@@ -13,7 +13,18 @@ class ScheduleService{
 
     public function getAll():array
     {
-        return $this->em->getRepository(Schedule::class)->findAll();
+        $schedules = $this->em->getRepository(Schedule::class)->findAll();
+        $new_schedules = [];
+        foreach ($schedules as $schedule){
+            $new_schedules[] = [
+                'id' => $schedule->getId(),
+                'subject'=> $schedule->getSubject(),
+                '_day'=> $schedule->getDay(),
+                'time'=> $schedule->getTime()->format('H:i'),
+                'group'=> $schedule->getGroup(),
+            ];
+        }
+        return $new_schedules;
     }
 
     public function createScheduleRecord(Schedule $schedule):Schedule{
