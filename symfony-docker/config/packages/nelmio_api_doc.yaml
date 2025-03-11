@@ -1,7 +1,7 @@
 nelmio_api_doc:
     documentation:
         servers:
-          - url: https://localhost
+          - url: http://localhost:8000
             description: API over HTTP
           - url: https://api.example.com/secured
             description: API over HTTPS

@@ -57,3 +57,22 @@
 		hide *.php
 	}
 }
+172.20.10.5:80 {
+    reverse_proxy https://php:443 {
+        header_up Host {http.request.host}
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+    header -Server
+}
+
+172.20.10.5:443 {
+    reverse_proxy https://php:443 {
+        header_up Host {http.request.host}
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+    header -Server
+}

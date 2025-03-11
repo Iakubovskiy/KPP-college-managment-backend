@@ -209,9 +209,9 @@ final class GroupController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/group', name: 'app_create_group', methods: ['POST'])]
+    #[Route('/api/group/', name: 'app_create_group', methods: ['POST'])]
     #[OA\Post(
-        path: "/api/group",
+        path: "/api/group/",
         summary: "Створення нової групи",
         tags: ["Groups"]
     )]
